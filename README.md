@@ -17,4 +17,4 @@ This repository contains the following resources
         Detailed explanations for this example can be found on our Developer Portal [here](https://developer.db.com/apidocumentation/oauthflows/tutorial)
 
 ## Licensing
- Licensed under the Apache License, Version 2.0
+Licensed under the Apache License, Version 2.0
