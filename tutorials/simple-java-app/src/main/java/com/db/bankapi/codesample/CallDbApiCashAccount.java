@@ -323,7 +323,7 @@ public class CallDbApiCashAccount {
 
 	/**
 	 * Step 4
-	 * After granting access, authorisation the Deutsche Bank API Program authorisation service redirects the user to
+	 * After granting access, the Deutsche Bank API Program authorisation service redirects the user to
 	 * the redirect_uri to receive the code.
 	 *
 	 * @param response
