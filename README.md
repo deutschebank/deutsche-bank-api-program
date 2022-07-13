@@ -5,7 +5,7 @@ With the API Program, Deutsche Bank makes a large amount of customer data access
 The technical cornerstone of this is the Developer Portal. With this repo, we would like to make it a little easier for interested developers 
 to access our APIs, documentation and the sandbox.
 
-Visit our Developer Portal at [developer.db.com](developer.db.com) to find out more.
+Visit our Developer Portal at [developer.db.com](https://developer.db.com) to find out more.
 
 ## Content
 
