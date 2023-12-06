@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  Copyright 2022 Deutsche Bank AG
+ *  Copyright 2023 Deutsche Bank AG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,35 +40,35 @@ import java.util.regex.Pattern;
 /**
  * If you setup this application in your local environment/IDE, we recommend maven as build tool with the following
  * dependency configurations:
- *
- * <dependencies>
+ * <pre>
+ *  <dependencies>
  * 		<dependency>
  * 			<groupId>org.glassfish.jersey.core</groupId>
  * 			<artifactId>jersey-client</artifactId>
- * 			<version>3.0.4</version>
+ * 			<version>3.1.3</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>org.glassfish.jersey.inject</groupId>
  * 			<artifactId>jersey-hk2</artifactId>
- * 			<version>3.0.4<</version>
+ * 			<version>3.1.3<</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>org.glassfish.jersey.media</groupId>
  * 			<artifactId>jersey-media-json-jackson</artifactId>
- * 			<version>3.0.4<</version>
+ * 			<version>3.1.3<</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>jakarta.activation</groupId>
  * 			<artifactId>jakarta.activation-api</artifactId>
- * 			<version>2.1.0</version>
+ * 			<version>2.1.2</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>commons-codec</groupId>
  * 			<artifactId>commons-codec</artifactId>
- * 			<version>1.15</version>
+ * 			<version>1.16.0</version>
  * 		</dependency>
  * 	</dependencies>
- *
+ * </pre>
  * To run this sample application you have to adapt 4 parameters:
  *
  * First, the variables fkn and pin from one of your Deutsche Bank test user accounts which you created
@@ -78,9 +78,11 @@ import java.util.regex.Pattern;
  * the Authorization Code Flow with Proof Key for Code Exchange (PKCE) grant type. The last parameter which has to be adapted is the query parameter "redirect_uri"
  * with one corresponding redirect URIs of your chosen app. This parameter is also used in Step 1 and Step 5 of this sample application.
  *
- * Using the Authorization Code Flow with PKCE, a client secret is not necessary anymore!
- * Instead this flow requires an extra step at the beginning and an extra verification at the end. This protects your app against authorisation
- * code interception attacks:
+ * Using the Authorization Code Flow with PKCE, prevents CSRF and authorization code injection attacks!
+ * In this example a client secret is not used. We presuppose that this application is a public client instead of a confidential client.
+ * If you develop a confidential client, you can use a client secret. Public clients are not allowed to use a client secret because they can't keep the client secret safely.
+ * For more information read our differences between a public and confidential client in our FAQ on https://developer.db.com/faq.
+ * The PKCE extension requires an extra step at the beginning and an extra verification at the end:
  *
  * First create a high-entropy cryptographic random string between 43 and 128 characters long using
  * the unreserved characters [A-Z] / [a-z] / [0-9] / "-" / "." / "_" / "~". This is your code verifier.
@@ -92,10 +94,20 @@ import java.util.regex.Pattern;
  * Attention!! Use https://simulator-api.db.com/gw/oidc/managegrants/ to remove the consent from
  * your client id (app) you use in this example if it's given before. Otherwise you will get a NullPointerException after granting
  * access to the scopes because you already granted the scope read_accounts before!
+ *
+ * If you're behind a proxy, you have to configure a proxy for each HTTP connection below. A proxy can be configured like this:
+ *
+ * <pre>
+ * Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("YOUR_PROXY_HOST", YOUR_PROXY_PORT));
+ * Client client = ClientBuilder.newClient(new ClientConfig()
+ *                  .connectorProvider(new HttpUrlConnectorProvider()
+ *                  .connectionFactory(url -> (HttpURLConnection) url.openConnection(proxy))));
+ * </pre>
  */
 public class CallDbApiCashAccount {
 
-	private final String SESSION_ID = "JSESSIONID";
+	private static final String SESSION_ID = "JSESSIONID";
+	private static final String BASE_URL = "https://simulator-api.db.com";
 
 	private String codeVerifier;
 	private String codeChallenge;
@@ -174,7 +186,6 @@ public class CallDbApiCashAccount {
 		}
 	}
 
-
 	/**
 	 * Step 1
 	 * Executes the OAuth2.0 initial authorization request.
@@ -190,7 +201,7 @@ public class CallDbApiCashAccount {
 	private Response authorizationRequest() {
 		WebTarget wt = ClientBuilder.newBuilder()
 				.build()
-				.target("https://simulator-api.db.com/gw/oidc/authorize");
+				.target(BASE_URL + "/gw/oidc/authorize");
 
 		//Please login to activate your client. The client_id and redirect_uri will be replaced with your activated client.
 		Response response = wt.property(ClientProperties.FOLLOW_REDIRECTS, false)
@@ -223,6 +234,10 @@ public class CallDbApiCashAccount {
 		 * redirect in the HttpUrlConnection doesn't forward the cookie, i.e.
 		 */
 		URI uri = response.getLocation();
+		if(!uri.isAbsolute()) {
+			uri = URI.create(BASE_URL).resolve(uri);
+		}
+
 		response =  ClientBuilder.newClient().target(uri)
 				.property(ClientProperties.FOLLOW_REDIRECTS, false)
 				.request()
@@ -289,6 +304,10 @@ public class CallDbApiCashAccount {
 	 */
 	private Response grantAccess(Response response) {
 		URI uri = response.getLocation();
+		if(!uri.isAbsolute()) {
+			uri = URI.create(BASE_URL).resolve(uri);
+		}
+
 		response = ClientBuilder.newClient().target(uri)
 				.property(ClientProperties.FOLLOW_REDIRECTS, false)
 				.request().cookie(sessionId).get();
@@ -354,7 +373,7 @@ public class CallDbApiCashAccount {
 
 		// 4.1.3. Access Token Request
 		Response response = ClientBuilder.newClient()
-				.target("https://simulator-api.db.com/gw/oidc/token")
+				.target(BASE_URL + "/gw/oidc/token")
 				.property(ClientProperties.FOLLOW_REDIRECTS, false)
 				.request()
 				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
@@ -395,7 +414,7 @@ public class CallDbApiCashAccount {
 	private void callCashAccountsEndpoint(String accessToken) {
 		WebTarget wt = ClientBuilder.newBuilder()
 				.build()
-				.target("https://simulator-api.db.com/gw/dbapi/banking/cashAccounts/v2");
+				.target(BASE_URL + "/gw/dbapi/banking/cashAccounts/v2");
 
 		Response response = wt.request()
 				.header("Authorization", "Bearer " + accessToken)
