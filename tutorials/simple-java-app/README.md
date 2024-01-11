@@ -1,11 +1,11 @@
 # Java application which calls the dbAPI endpoint "cashAccounts"
 
 This small application calls the dbAPI endpoint "cashAccounts" available
-in the API Explorer on our [developer portal](https://developer.db.com/apidocumentation/terminal).
-This endpoint is documented in a [swagger definition](https://simulator-api.db.com/gw/dbapi/swaggers/v1/dbapi-cashAccounts-v2/swagger)
+in the API Explorer on our [developer portal](https://developer.db.com/apiexplorer).
+This endpoint is documented in a swagger definition which you can download by clicking on the "Swagger" button [here](https://developer.db.com/apiexplorer/terminal/db/banking/cashAccounts/v2).
 
 ## What does this example do?
-It is a step by step guide executing and explaining what a third party provider
+It is a step-by-step guide executing and explaining what a third party provider
 has to do to call the dbAPI cashAccounts endpoint. Specially, it executes and
 explains the OAuth2.0 authorization code grant type with PKCE flow [described here](https://developer.db.com/apidocumentation/oauthflows/oauthcodegrantpkce)
 and finally calls the "cashAccounts" endpoint of our dbAPI.
