@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  Copyright 2024 Deutsche Bank AG
+ *  Copyright 2025 Deutsche Bank AG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,34 +38,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * If you setup this application in your local environment/IDE, we recommend maven as build tool with the following
+ * If you set up this application in your local environment/IDE, we recommend maven as build tool with the following
  * dependency configurations:
  * <pre>
  *  <dependencies>
  * 		<dependency>
  * 			<groupId>org.glassfish.jersey.core</groupId>
  * 			<artifactId>jersey-client</artifactId>
- * 			<version>3.1.3</version>
+ * 			<version>3.1.10</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>org.glassfish.jersey.inject</groupId>
  * 			<artifactId>jersey-hk2</artifactId>
- * 			<version>3.1.3<</version>
+ * 			<version>3.1.10<</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>org.glassfish.jersey.media</groupId>
  * 			<artifactId>jersey-media-json-jackson</artifactId>
- * 			<version>3.1.3<</version>
+ * 			<version>3.1.10<</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>jakarta.activation</groupId>
  * 			<artifactId>jakarta.activation-api</artifactId>
- * 			<version>2.1.2</version>
+ * 			<version>2.1.3</version>
  * 		</dependency>
  * 		<dependency>
  * 			<groupId>commons-codec</groupId>
  * 			<artifactId>commons-codec</artifactId>
- * 			<version>1.16.0</version>
+ * 			<version>1.18.0</version>
  * 		</dependency>
  * 	</dependencies>
  * </pre>
@@ -92,7 +92,7 @@ import java.util.regex.Pattern;
  * server to verify that it's communicating with your app only.
  *
  * Attention!! Use https://simulator-api.db.com/gw/oidc/managegrants/ to remove the consent from
- * your client id (app) you use in this example if it's given before. Otherwise you will get a NullPointerException after granting
+ * your client id (app) you use in this example if it's given before. Otherwise, you will get a NullPointerException after granting
  * access to the scopes because you already granted the scope read_accounts before!
  *
  * If you're behind a proxy, you have to configure a proxy for each HTTP connection below. A proxy can be configured like this:
@@ -203,17 +203,17 @@ public class CallDbApiCashAccount {
 				.build()
 				.target(BASE_URL + "/gw/oidc/authorize");
 
-		//Please login to activate your client. The client_id and redirect_uri will be replaced with your activated client.
-		Response response = wt.property(ClientProperties.FOLLOW_REDIRECTS, false)
-				.queryParam("response_type", "code")
-				.queryParam("client_id", "Your clientId from your generated client")
-				.queryParam("redirect_uri", "One of your redirect URI(s) from your generated client")
-				.queryParam("scope", "read_accounts")
-				.queryParam("code_challenge_method", "S256")
-				.queryParam("code_challenge", codeChallenge)
-				.queryParam("state", "0.21581183640296075")
-				.request()
-				.get();
+				//Please login to activate your client. The client_id and redirect_uri will be replaced with your activated client.
+				Response response = wt.property(ClientProperties.FOLLOW_REDIRECTS, false)
+						.queryParam("response_type", "code")
+						.queryParam("client_id", "Your clientId from your generated client")
+						.queryParam("redirect_uri", "One of your redirect URI(s) from your generated client")
+						.queryParam("scope", "read_accounts")
+						.queryParam("code_challenge_method", "S256")
+						.queryParam("code_challenge", codeChallenge)
+						.queryParam("state", "0.21581183640296075")
+						.request()
+						.get();
 
 		updateSessionId(response);
 		System.out.println("Step 1 executed authorizeRequest.");
